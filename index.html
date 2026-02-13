@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER BONUS</title>
+    <style>
+        /* Базовые стили из твоего файла */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            /* Путь к картинке */
+            background-image: url('bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #0f172a; /* Цвет фона, если картинка не загрузится */
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden; /* Блокируем скролл */
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85); /* Чуть темнее для читаемости */
+            padding: 30px 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+            /* Скрываем по умолчанию, JS решит какой блок показать */
+            display: none; 
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 22px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        /* Анимация стрелки из твоего файла */
+        .arrow {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 3em;
+            animation: arrowMove 1s infinite alternate;
+        }
+
+        @keyframes arrowMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+
+        .steps {
+            margin: 20px 0;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .steps p {
+            margin: 15px 0;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .steps p:nth-child(2) {
+            font-weight: bold;
+            color: #4ade80; /* Зеленоватый оттенок для акцента */
+            animation: textZoom 1s infinite alternate;
+        }
+
+        @keyframes textZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+
+        /* --- СТИЛИ ДЛЯ ЛОАДЕРА (Когда идет редирект) --- */
+        .loader {
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #f59e0b; /* Золотой цвет */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        .redirect-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- БЛОК 1: ДЛЯ ВСТРОЕННЫХ БРАУЗЕРОВ (TIKTOK/INSTAGRAM) -->
+    <div id="in-app-view" class="container">
+        <div class="arrow">⬆️</div>
+        <h1 id="mainText">You must run browser for the best experience play 🎰</h1>
+        <div class="steps">
+            <p id="step1">1. Click the three dots in the top right corner</p>
+            <p id="step2">2. Tap "Open in browser" from the menu that opens</p>
+        </div>
+    </div>
+
+    <!-- БЛОК 2: ДЛЯ ОБЫЧНЫХ БРАУЗЕРОВ (РЕДИРЕКТ) -->
+    <div id="browser-view" class="container" style="background: rgba(0,0,0,0.6);">
+        <div class="loader"></div>
+        <div class="redirect-text" id="redirectText">
+            Loading Bonus...
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ТВОИ ССЫЛКИ ---
+        const LINK_GERMANY  = "https://eastrk-dt.com/s?a=241617&sm=42728&co=299963&mt=26&s1=e2&s2=E1"; 
+        const LINK_EU_GROUP = "https://eastrk-dt.com/s?a=241617&sm=42728&co=299963&mt=26&s1=e2&s2=E1"; 
+        const LINK_DEFAULT  = "https://eastrk-dt.com/s?a=241617&sm=42728&co=299963&mt=26&s1=e2&s2=E1";
+
+        const OFFER_LINKS = {
+            'default': LINK_DEFAULT,
+            'de': LINK_GERMANY,
+            'pl': LINK_EU_GROUP, 'lv': LINK_EU_GROUP, 'lt': LINK_EU_GROUP, 
+            'et': LINK_EU_GROUP, 'ee': LINK_EU_GROUP, 'ro': LINK_EU_GROUP, 
+            'hu': LINK_EU_GROUP, 'be': LINK_EU_GROUP, 'no': LINK_EU_GROUP, 
+            'nb': LINK_EU_GROUP, 'nn': LINK_EU_GROUP, 'da': LINK_EU_GROUP, 
+            'dk': LINK_EU_GROUP, 'sv': LINK_EU_GROUP, 'se': LINK_EU_GROUP, 
+            'sw': LINK_EU_GROUP, 'sl': LINK_EU_GROUP, 'sk': LINK_EU_GROUP, 
+            'el': LINK_EU_GROUP, 'gr': LINK_EU_GROUP, 'lb': LINK_EU_GROUP, 
+            'lu': LINK_EU_GROUP, 'bs': LINK_EU_GROUP, 'ba': LINK_EU_GROUP, 
+            'bg': LINK_EU_GROUP, 'ga': LINK_EU_GROUP, 'ie': LINK_EU_GROUP, 
+            'sq': LINK_EU_GROUP, 'al': LINK_EU_GROUP, 'hr': LINK_EU_GROUP, 
+            'mk': LINK_EU_GROUP, 'me': LINK_EU_GROUP, 'cnr': LINK_EU_GROUP
+        };
+
+        // --- 2. УЛУЧШЕННАЯ ПРОВЕРКА БРАУЗЕРА ---
+        function isInAppBrowser() {
+            const ua = (navigator.userAgent || navigator.vendor || window.opera).toLowerCase();
+            const referrer = (document.referrer || "").toLowerCase();
+
+            // 1. Проверка по User Agent (Добавлены BytedanceWebview, musical_ly и др.)
+            const isInAppUA = 
+                   ua.includes("fban") ||       // Facebook
+                   ua.includes("fbav") ||       // Facebook
+                   ua.includes("instagram") ||  // Instagram
+                   ua.includes("tiktok") ||     // TikTok (обычный)
+                   ua.includes("bytedance") ||  // TikTok (движок)
+                   ua.includes("bytedancewebview") || // Из скриншота: спец. вебвью
+                   ua.includes("musical_ly") || // Из скриншота: старый TikTok
+                   ua.includes("trill") ||      // TikTok (азиатский движок)
+                   ua.includes("snapchat") ||   // Snapchat
+                   ua.includes("line") ||       // Line
+                   ua.includes("whatsapp") ||   // WhatsApp
+                   ua.includes("telegram") ||   // Telegram
+                   ua.includes("twitter") ||    // Twitter
+                   ua.includes("wv");           // WebView (общий признак встроенного браузера Android)
+
+            // 2. Дополнительная проверка по Referrer (Добавлены vm. и m. субдомены)
+            const isTikTokReferrer = 
+                referrer.includes("tiktok.com") || 
+                referrer.includes("vm.tiktok.com") || 
+                referrer.includes("m.tiktok.com");
+
+            // Если совпал User Agent ИЛИ реферер указывает на ТикТок -> считаем это приложением
+            return isInAppUA || isTikTokReferrer;
+        }
+
+        // --- 3. НАСТРОЙКА ТЕКСТА ---
+        function setLanguageText() {
+            var userLang = navigator.language || navigator.userLanguage;
+            // Проверка языка и изменение текста в соответствии с ним
+            if (userLang.startsWith("ru")) {
+                document.getElementById("mainText").innerText = "Для наилучшего игрового опыта запустите браузер 🎰";
+                document.getElementById("step1").innerText = "1. Нажмите на три точки в правом верхнем углу";
+                document.getElementById("step2").innerText = "2. Выберите «Открыть в браузере» в открывшемся меню";
+                document.getElementById("redirectText").innerText = "Загрузка Бонуса...";
+            } else if (userLang.startsWith("es")) {
+                document.getElementById("mainText").innerText = "Para la mejor experiencia de juego, abra el navegador 🎰";
+                document.getElementById("step1").innerText = "1. Haga clic en los tres puntos en la esquina superior derecha";
+                document.getElementById("step2").innerText = "2. Toque \"Abrir en el navegador\" en el menú que se abre";
+                document.getElementById("redirectText").innerText = "Cargando Bono...";
+            } else if (userLang.startsWith("zh")) {
+                document.getElementById("mainText").innerText = "为了获得最佳的游戏体验，请运行浏览器 🎰";
+                document.getElementById("step1").innerText = "1. 点击右上角的三个点";
+                document.getElementById("step2").innerText = "2. 从打开的菜单中选择“在浏览器中打开”";
+            } else if (userLang.startsWith("fr")) {
+                document.getElementById("mainText").innerText = "Pour une meilleure expérience de jeu, ouvrez le navigateur 🎰";
+                document.getElementById("step1").innerText = "1. Cliquez sur les trois points en haut à droite";
+                document.getElementById("step2").innerText = "2. Appuyez sur \"Ouvrir dans le navigateur\" dans le menu qui s'ouvre";
+            } else if (userLang.startsWith("de")) {
+                document.getElementById("mainText").innerText = "Für das beste Spielerlebnis öffnen Sie den Browser 🎰";
+                document.getElementById("step1").innerText = "1. Klicken Sie auf die drei Punkte in der oberen rechten Ecke";
+                document.getElementById("step2").innerText = "2. Tippen Sie im geöffneten Menü auf \"Im Browser öffnen\"";
+            } else if (userLang.startsWith("hr")) {
+                document.getElementById("mainText").innerText = "Za najbolje iskustvo igre, otvorite preglednik 🎰";
+                document.getElementById("step1").innerText = "1. Kliknite na tri točke u gornjem desnom kutu";
+                document.getElementById("step2").innerText = "2. U izborniku koji se otvori odaberite \"Otvori u pregledniku\"";
+            } else if (userLang.startsWith("hu")) {
+                document.getElementById("mainText").innerText = "A legjobb játékélmény érdekében nyissa meg a böngészőt 🎰";
+                document.getElementById("step1").innerText = "1. Kattintson a jobb felső sarokban található három pontra";
+                document.getElementById("step2").innerText = "2. A megnyíló menüben kattintson a \"Megnyitás a böngészőben\" lehetőségre";
+            } else if (userLang.startsWith("it")) {
+                document.getElementById("mainText").innerText = "Per la migliore esperienza di gioco, apri il browser 🎰";
+                document.getElementById("step1").innerText = "1. Fai clic sui tre punti in alto a destra";
+                document.getElementById("step2").innerText = "2. Tocca \"Apri nel browser\" nel menu che si apre";
+            } else if (userLang.startsWith("cs")) {
+                document.getElementById("mainText").innerText = "Pro nejlepší herní zážitek otevřete prohlížeč 🎰";
+                document.getElementById("step1").innerText = "1. Klikněte na tři tečky v pravém horním rohu";
+                document.getElementById("step2").innerText = "2. V otevřeném menu klikněte na \"Otevřít v prohlížeči\"";
+            } else if (userLang.startsWith("sk")) {
+                document.getElementById("mainText").innerText = "Pre najlepší herný zážitok otvorte prehliadač 🎰";
+                document.getElementById("step1").innerText = "1. Kliknite na tri bodky v pravom hornom rohu";
+                document.getElementById("step2").innerText = "2. V otvorenom menu kliknite na \"Otvoriť v prehliadači\"";
+            } else if (userLang.startsWith("fi")) {
+                document.getElementById("mainText").innerText = "Parhaan pelikokemuksen saamiseksi avaa selain 🎰";
+                document.getElementById("step1").innerText = "1. Napsauta kolmea pistettä oikeassa yläkulmassa";
+                document.getElementById("step2").innerText = "2. Valitse avautuvasta valikosta \"Avaa selaimessa\"";
+            } else if (userLang.startsWith("el")) {
+                document.getElementById("mainText").innerText = "Για την καλύτερη εμπειρία παιχνιδιού, ανοίξτε τον περιηγητή 🎰";
+                document.getElementById("step1").innerText = "1. Κάντε κλικ στις τρεις τελείες στην επάνω δεξιά γωνία";
+                document.getElementById("step2").innerText = "2. Πατήστε \"Άνοιγμα στο πρόγραμμα περιήγησης\" από το μενού που ανοίγει";
+            } else if (userLang.startsWith("uk")) {
+                document.getElementById("mainText").innerText = "Для найкращого ігрового досвіду запустіть браузер 🎰";
+                document.getElementById("step1").innerText = "1. Натисніть на три точки у верхньому правньому куті";
+                document.getElementById("step2").innerText = "2. Виберіть «Відкрити в браузері» у відкритому меню";
+            } else if (userLang.startsWith("no")) {
+                document.getElementById("mainText").innerText = "For best mulig spillopplevelse, åpne nettleseren 🎰";
+                document.getElementById("step1").innerText = "1. Klikk på de tre prikkene i øverste høyre hjørne";
+                document.getElementById("step2").innerText = "2. Trykk på \"Åpne i nettleser\" fra menyen som åpnes";
+            } else if (userLang.startsWith("et")) {
+                document.getElementById("mainText").innerText = "Parima mängukogemuse jaoks avage brauser 🎰";
+                document.getElementById("step1").innerText = "1. Klõpsake paremas ülanurgas kolme punkti";
+                document.getElementById("step2").innerText = "2. Avanenud menüüst valige \"Ava brauseris\"";
+            } else if (userLang.startsWith("pl")) {
+                document.getElementById("mainText").innerText = "Aby uzyskać najlepsze wrażenia z gry, otwórz przeglądarkę 🎰";
+                document.getElementById("step1").innerText = "1. Kliknij trzy kropki w prawym górnym rogu";
+                document.getElementById("step2").innerText = "2. Wybierz \"Otwórz w przeglądarce\" z otwartego menu";
+            } else if (userLang.startsWith("tr")) {
+                document.getElementById("mainText").innerText = "En iyi oyun deneyimi için tarayıcıyı açın 🎰";
+                document.getElementById("step1").innerText = "1. Sağ üst köşedeki üç noktaya tıklayın";
+                document.getElementById("step2").innerText = "2. Açılan menüden \"Tarayıcıda aç\" öğesine dokunun";
+            } else if (userLang.startsWith("bg")) {
+                document.getElementById("mainText").innerText = "За най-добро изживяване при игра, отворете браузъра 🎰";
+                document.getElementById("step1").innerText = "1. Щракнете върху трите точки в горния десен ъгъл";
+                document.getElementById("step2").innerText = "2. Изберете \"Отвори в браузъра\" от менюто, което се отваря";
+            } else if (userLang.startsWith("ja")) {
+                document.getElementById("mainText").innerText = "最高のゲーム体験のために、ブラウザを起動してください 🎰";
+                document.getElementById("step1").innerText = "1. 右上の3点をクリック";
+                document.getElementById("step2").innerText = "2. 開いたメニューから「ブラウザで開く」を選択";
+            } else if (userLang.startsWith("ko")) {
+                document.getElementById("mainText").innerText = "최고의 게임 경험을 위해 브라우저를 실행하세요 🎰";
+                document.getElementById("step1").innerText = "1. 오른쪽 상단의 세 점을 클릭하세요";
+                document.getElementById("step2").innerText = "2. 열린 메뉴에서 \"브라우저에서 열기\"를 선택하세요";
+            } else if (userLang.startsWith("sr")) {
+                document.getElementById("mainText").innerText = "За најбоље искуство игре, отворите прегледач 🎰";
+                document.getElementById("step1").innerText = "1. Кликните на три тачке у горњем десном углу";
+                document.getElementById("step2").innerText = "2. Изаберите „Отвори у прегледачу“ из менија који се отвори";
+            }
+        }
+
+        // --- 4. ЗАПУСК ---
+        window.onload = function() {
+            setLanguageText(); // Устанавливаем язык
+
+            const inAppView = document.getElementById('in-app-view');
+            const browserView = document.getElementById('browser-view');
+
+            if (isInAppBrowser()) {
+                // Если ТикТок -> Показываем инструкцию
+                inAppView.style.display = 'block';
+            } else {
+                // Если обычный браузер -> МГНОВЕННЫЙ РЕДИРЕКТ
+                // Мы даже не показываем блок загрузки
+                
+                // Определяем ссылку по стране
+                const rawLang = (navigator.language || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
+                const targetLink = OFFER_LINKS[rawLang] || OFFER_LINKS['default'];
+
+                // replace заменяет текущую историю, чтобы нельзя было нажать "Назад"
+                window.location.replace(targetLink);
+            }
+        };
+    </script>
+</body>
+</html>
