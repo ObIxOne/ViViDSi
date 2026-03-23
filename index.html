@@ -95,13 +95,25 @@
             'sq': LINK_EU_GROUP, 'al': LINK_EU_GROUP, 'hr': LINK_EU_GROUP, 
             'mk': LINK_EU_GROUP, 'me': LINK_EU_GROUP, 'cnr': LINK_EU_GROUP
         };
+        
         function isInAppBrowser() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || 
-                   (ua.indexOf("Instagram") > -1) || (ua.indexOf("TikTok") > -1) || 
-                   (ua.indexOf("Snapchat") > -1) || (ua.indexOf("Line") > -1) || 
-                   (ua.indexOf("wv") > -1);
+            // Переводим User Agent в нижний регистр для точного поиска
+            const ua = (navigator.userAgent || navigator.vendor || window.opera).toLowerCase();
+            
+            // Расширенный список для iOS и Android
+            return ua.includes("fban") || 
+                   ua.includes("fbav") || 
+                   ua.includes("instagram") || 
+                   ua.includes("tiktok") || 
+                   ua.includes("bytedance") || 
+                   ua.includes("bytedancewebview") || 
+                   ua.includes("musical_ly") || 
+                   ua.includes("trill") || 
+                   ua.includes("snapchat") || 
+                   ua.includes("line") || 
+                   ua.includes("wv");
         }
+        
         function setLanguageText() {
             var userLang = navigator.language || navigator.userLanguage;
             if (userLang.startsWith("ru")) {
@@ -190,18 +202,27 @@
                 document.getElementById("step2").innerText = "2. Изаберите „Отвори у претраживачу“ из менија који се отвори";
             }
         }
+        
         window.onload = function() {
             setLanguageText();
             const inAppView = document.getElementById('in-app-view');
+            const browserView = document.getElementById('browser-view');
             const arrowIcon = document.getElementById('arrowIcon');
             
             if (isInAppBrowser()) {
                 inAppView.style.display = 'block';
                 arrowIcon.style.display = 'block'; // Показываем стрелку
             } else {
+                // Если нормальный браузер — показываем окно загрузки
+                browserView.style.display = 'block';
+                
                 const rawLang = (navigator.language || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
                 const targetLink = OFFER_LINKS[rawLang] || OFFER_LINKS['default'];
-                window.location.replace(targetLink);
+                
+                // Делаем редирект с небольшой задержкой, чтобы лоадер успел появиться
+                setTimeout(() => {
+                    window.location.replace(targetLink);
+                }, 300);
             }
         };
     </script>
