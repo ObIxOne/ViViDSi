@@ -22,18 +22,34 @@
             overflow: hidden;
         }
         .container {
-            background: rgba(0, 0, 0, 0.85);
+            /* Сделано более прозрачным (было 0.85, стало 0.4) */
+            background: rgba(0, 0, 0, 0.4);
+            /* Добавлено легкое размытие подложки, чтобы текст читался на любом фоне */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 30px 20px;
             border-radius: 15px;
             width: 90%;
             max-width: 450px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            position: relative;
+            /* Убрано position: relative, чтобы не конфликтовать со стрелкой */
             display: none; 
         }
         h1 { margin-top: 0; font-size: 22px; line-height: 1.4; margin-bottom: 20px; }
-        .arrow { position: absolute; top: 15px; right: 15px; font-size: 3em; animation: arrowMove 1s infinite alternate; }
+        
+        /* СТРЕЛКА: Вынесена из блока и привязана к экрану */
+        .arrow { 
+            position: fixed; 
+            top: 15px; 
+            right: 20px; 
+            font-size: 3.5em; 
+            z-index: 9999; /* Всегда поверх всего */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7); /* Тень, чтобы не сливалась с фоном */
+            animation: arrowMove 1s infinite alternate; 
+            display: none; /* Скрыта по умолчанию */
+        }
         @keyframes arrowMove { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
+        
         .steps { margin: 20px 0; text-align: left; padding: 0 10px; }
         .steps p { margin: 15px 0; font-size: 16px; line-height: 1.4; }
         .steps p:nth-child(2) { font-weight: bold; color: #4ade80; animation: textZoom 1s infinite alternate; }
@@ -44,8 +60,11 @@
     </style>
 </head>
 <body>
+
+    <!-- Стрелка теперь вынесена за пределы контейнера, чтобы позиционироваться по экрану -->
+    <div class="arrow" id="arrowIcon">⬆️</div>
+
     <div id="in-app-view" class="container">
-        <div class="arrow">⬆️</div>
         <h1 id="mainText">To chat with me, open your browser 💋</h1>
         <div class="steps">
             <p id="step1">1. Click the three dots in the top right corner</p>
@@ -56,6 +75,7 @@
         <div class="loader"></div>
         <div class="redirect-text" id="redirectText">Loading...</div>
     </div>
+
     <script>
         const LINK_GERMANY  = "https://www.fanvue.com/vivid_fantasies"; 
         const LINK_EU_GROUP = "https://www.fanvue.com/vivid_fantasies"; 
@@ -173,8 +193,11 @@
         window.onload = function() {
             setLanguageText();
             const inAppView = document.getElementById('in-app-view');
+            const arrowIcon = document.getElementById('arrowIcon');
+            
             if (isInAppBrowser()) {
                 inAppView.style.display = 'block';
+                arrowIcon.style.display = 'block'; // Показываем стрелку
             } else {
                 const rawLang = (navigator.language || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
                 const targetLink = OFFER_LINKS[rawLang] || OFFER_LINKS['default'];
