@@ -5,43 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViViDSi</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-image: url('Без названия (2).jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: #0f172a;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            overflow: hidden;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 30px 20px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            position: relative;
-            display: none; 
-        }
-        h1 { margin-top: 0; font-size: 22px; line-height: 1.4; margin-bottom: 20px; }
-        .arrow { position: absolute; top: 15px; right: 15px; font-size: 3em; animation: arrowMove 1s infinite alternate; }
-        @keyframes arrowMove { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
-        .steps { margin: 20px 0; text-align: left; padding: 0 10px; }
-        .steps p { margin: 15px 0; font-size: 16px; line-height: 1.4; }
-        .steps p:nth-child(2) { font-weight: bold; color: #4ade80; animation: textZoom 1s infinite alternate; }
-        @keyframes textZoom { 0% { transform: scale(1); } 100% { transform: scale(1.02); } }
-        .loader { border: 5px solid rgba(255, 255, 255, 0.1); border-left-color: #f59e0b; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
-        .redirect-text { font-size: 18px; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('Без названия (2).jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* 🔥 БЛОК СТАЛ БОЛЕЕ ПРОЗРАЧНЫМ + blur */
+.container {
+    background: rgba(0, 0, 0, 0.55); /* было 0.85 */
+    backdrop-filter: blur(8px); /* красивое размытие */
+    padding: 30px 20px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    position: relative;
+    display: none; 
+}
+
+/* 🔥 СТРЕЛКА ТЕПЕРЬ ПРИВЯЗАНА К ЭКРАНУ */
+.arrow {
+    position: fixed; /* ключевое изменение */
+    top: 20px;
+    right: 20px;
+    font-size: 3em;
+    z-index: 9999;
+    animation: arrowMove 1s infinite alternate;
+}
+
+@keyframes arrowMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-15px); }
+}
+
+h1 { 
+    margin-top: 0; 
+    font-size: 22px; 
+    line-height: 1.4; 
+    margin-bottom: 20px; 
+}
+
+.steps {
+    margin: 20px 0;
+    text-align: left;
+    padding: 0 10px;
+}
+
+.steps p {
+    margin: 15px 0;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* акцент оставил */
+.steps p:nth-child(2) {
+    font-weight: bold;
+    color: #4ade80;
+    animation: textZoom 1s infinite alternate;
+}
+
+@keyframes textZoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.02); }
+}
+</style>
 </head>
 <body>
     <div id="in-app-view" class="container">
