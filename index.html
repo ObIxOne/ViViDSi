@@ -22,10 +22,10 @@ body {
     overflow: hidden;
 }
 
-/* 🔥 БЛОК СТАЛ БОЛЕЕ ПРОЗРАЧНЫМ + blur */
+/* 🔥 БЛОК ПРОЗРАЧНЫЙ */
 .container {
-    background: rgba(0, 0, 0, 0.55); /* было 0.85 */
-    backdrop-filter: blur(8px); /* красивое размытие */
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
     padding: 30px 20px;
     border-radius: 15px;
     width: 90%;
@@ -35,13 +35,14 @@ body {
     display: none; 
 }
 
-/* 🔥 СТРЕЛКА ТЕПЕРЬ ПРИВЯЗАНА К ЭКРАНУ */
+/* 🔥 СТРЕЛКА ТЕПЕРЬ ВНЕ БЛОКА И ПРИБИТА К ЭКРАНУ */
 .arrow {
-    position: fixed; /* ключевое изменение */
-    top: 20px;
-    right: 20px;
+    position: fixed;
+    top: 60px; /* чтобы не залезала под статус бар */
+    right: 15px;
     font-size: 3em;
-    z-index: 9999;
+    z-index: 999999;
+    pointer-events: none;
     animation: arrowMove 1s infinite alternate;
 }
 
@@ -69,7 +70,6 @@ h1 {
     line-height: 1.4;
 }
 
-/* акцент оставил */
 .steps p:nth-child(2) {
     font-weight: bold;
     color: #4ade80;
@@ -80,25 +80,54 @@ h1 {
     0% { transform: scale(1); }
     100% { transform: scale(1.02); }
 }
+
+/* loader */
+.loader {
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #f59e0b;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
+}
+
+.redirect-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@keyframes spin { 
+    100% { transform: rotate(360deg); } 
+}
 </style>
 </head>
 <body>
+
+    <!-- 🔥 СТРЕЛКА ВНЕ КОНТЕЙНЕРА -->
+    <div class="arrow">⬆️</div>
+
     <div id="in-app-view" class="container">
-        <div class="arrow">⬆️</div>
         <h1 id="mainText">To chat with me, open your browser 💋</h1>
         <div class="steps">
             <p id="step1">1. Click the three dots in the top right corner</p>
             <p id="step2">2. Tap "Open in browser" from the menu that opens</p>
         </div>
     </div>
+
     <div id="browser-view" class="container" style="background: rgba(0,0,0,0.6); display: none;">
         <div class="loader"></div>
         <div class="redirect-text" id="redirectText">Loading...</div>
     </div>
+
     <script>
         const LINK_GERMANY  = "https://www.fanvue.com/vivid_fantasies"; 
         const LINK_EU_GROUP = "https://www.fanvue.com/vivid_fantasies"; 
         const LINK_DEFAULT  = "https://www.fanvue.com/vivid_fantasies";
+
         const OFFER_LINKS = {
             'default': LINK_DEFAULT,
             'de': LINK_GERMANY,
@@ -114,6 +143,7 @@ h1 {
             'sq': LINK_EU_GROUP, 'al': LINK_EU_GROUP, 'hr': LINK_EU_GROUP, 
             'mk': LINK_EU_GROUP, 'me': LINK_EU_GROUP, 'cnr': LINK_EU_GROUP
         };
+
         function isInAppBrowser() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || 
@@ -121,97 +151,20 @@ h1 {
                    (ua.indexOf("Snapchat") > -1) || (ua.indexOf("Line") > -1) || 
                    (ua.indexOf("wv") > -1);
         }
+
         function setLanguageText() {
             var userLang = navigator.language || navigator.userLanguage;
-            if (userLang.startsWith("ru")) {
-                document.getElementById("mainText").innerText = "Чтобы написать мне, открой браузер 💋";
-                document.getElementById("step1").innerText = "1. Нажмите на три точки в правом верхнем углу";
-                document.getElementById("step2").innerText = "2. Выберите «Открыть в браузере» в открывшемся меню";
-            } else if (userLang.startsWith("es")) {
-                document.getElementById("mainText").innerText = "Abre el navegador para chatear conmigo 💋";
-                document.getElementById("step1").innerText = "1. Haga clic en los tres puntos en la esquina superior derecha";
-                document.getElementById("step2").innerText = "2. Toque \"Abrir en el navegador\" en el menú que se abre";
-            } else if (userLang.startsWith("zh")) {
-                document.getElementById("mainText").innerText = "请在浏览器中打开以与我聊天 💋";
-                document.getElementById("step1").innerText = "1. 点击右上角的三个点";
-                document.getElementById("step2").innerText = "2. 从打开的菜单中选择“在浏览器中打开”";
-            } else if (userLang.startsWith("fr")) {
-                document.getElementById("mainText").innerText = "Ouvre le navigateur pour me contacter 💋";
-                document.getElementById("step1").innerText = "1. Cliquez sur les trois points en haut à droite";
-                document.getElementById("step2").innerText = "2. Appuyez sur \"Ouvrir dans le navigateur\" dans le menu qui s'ouvre";
-            } else if (userLang.startsWith("de")) {
+
+            if (userLang.startsWith("de")) {
                 document.getElementById("mainText").innerText = "Öffne den Browser, um mir zu schreiben 💋";
-                document.getElementById("step1").innerText = "1. Klicken Sie auf die drei Punkte in der oberen rechten Ecke";
-                document.getElementById("step2").innerText = "2. Tippen Sie im geöffneten Menü auf \"Im Browser öffnen\"";
-            } else if (userLang.startsWith("hr")) {
-                document.getElementById("mainText").innerText = "Otvori preglednik da mi napišeš 💋";
-                document.getElementById("step1").innerText = "1. Kliknite na tri točke u gornjem desnom kutu";
-                document.getElementById("step2").innerText = "2. U izborniku koji se otvori odaberite \"Otvori u pregledniku\"";
-            } else if (userLang.startsWith("hu")) {
-                document.getElementById("mainText").innerText = "Nyisd meg a böngészőt, hogy írj nekem 💋";
-                document.getElementById("step1").innerText = "1. Kattintson a jobb felső sarokban található három pontra";
-                document.getElementById("step2").innerText = "2. A megnyíló menüben kattintson a \"Megnyitás a böngészőben\" lehetőségre";
-            } else if (userLang.startsWith("it")) {
-                document.getElementById("mainText").innerText = "Apri il browser per scrivermi 💋";
-                document.getElementById("step1").innerText = "1. Fai clic sui tre punti in alto a destra";
-                document.getElementById("step2").innerText = "2. Tocca \"Apri nel browser\" nel menu che si apre";
-            } else if (userLang.startsWith("cs")) {
-                document.getElementById("mainText").innerText = "Otevři prohlížeč a napiš mi 💋";
-                document.getElementById("step1").innerText = "1. Klikněte na tři tečky v pravém horním rohu";
-                document.getElementById("step2").innerText = "2. V otevřeném menu klikněte na \"Otevřít v prohlížeči\"";
-            } else if (userLang.startsWith("sk")) {
-                document.getElementById("mainText").innerText = "Otvor prehliadač a napíš mi 💋";
-                document.getElementById("step1").innerText = "1. Kliknite na tri bodky v pravom hornom rohu";
-                document.getElementById("step2").innerText = "2. V otvorenom menu kliknite na \"Otvoriť v prehliadači\"";
-            } else if (userLang.startsWith("fi")) {
-                document.getElementById("mainText").innerText = "Avaa selain kirjoittaaksesi minulle 💋";
-                document.getElementById("step1").innerText = "1. Napsauta kolmea pistettä oikeassa yläkulmassa";
-                document.getElementById("step2").innerText = "2. Valitse avautuvasta valikosta \"Avaa selaimessa\"";
-            } else if (userLang.startsWith("el")) {
-                document.getElementById("mainText").innerText = "Άνοιξε τον περιηγητή για να μου γράψεις 💋";
-                document.getElementById("step1").innerText = "1. Κάντε κλικ στις τρεις τελείες στην επάνω δεξιά γωνία";
-                document.getElementById("step2").innerText = "2. Πατήστε \"Άνοιγμα στο πρόγραμμα περιήγησης\" από το μενού που ανοίγει";
-            } else if (userLang.startsWith("uk")) {
-                document.getElementById("mainText").innerText = "Щоб написати мені, відкрий браузер 💋";
-                document.getElementById("step1").innerText = "1. Натисніть на три точки у верхньому правньому куті";
-                document.getElementById("step2").innerText = "2. Виберіть «Відкрити в браузері» у відкритому меню";
-            } else if (userLang.startsWith("no")) {
-                document.getElementById("mainText").innerText = "Åpne nettleseren for å chatte med meg 💋";
-                document.getElementById("step1").innerText = "1. Klikk på de tre prikkene i øverste høyre hjørne";
-                document.getElementById("step2").innerText = "2. Trykk på \"Åpne i nettleser\" fra menyen som åpnes";
-            } else if (userLang.startsWith("et")) {
-                document.getElementById("mainText").innerText = "Ava brauser, et mulle kirjutada 💋";
-                document.getElementById("step1").innerText = "1. Klõpsake paremas ülanurgas kolme punkti";
-                document.getElementById("step2").innerText = "2. Avanenud menüüst valige \"Ava brauseris\"";
-            } else if (userLang.startsWith("pl")) {
-                document.getElementById("mainText").innerText = "Otwórz przeglądarkę, żeby do mnie napisać 💋";
-                document.getElementById("step1").innerText = "1. Kliknij trzy kropki w prawym górnym rogu";
-                document.getElementById("step2").innerText = "2. Wybierz \"Otwórz w przeglądarce\" z otwartego menu";
-            } else if (userLang.startsWith("tr")) {
-                document.getElementById("mainText").innerText = "Benimle sohbet etmek için tarayıcını aç 💋";
-                document.getElementById("step1").innerText = "1. Sağ üst köşedeki üç noktaya tıklayın";
-                document.getElementById("step2").innerText = "2. Açılan menüden \"Tarayıcıda aç\" öğesine dokunun";
-            } else if (userLang.startsWith("bg")) {
-                document.getElementById("mainText").innerText = "Отвори браузъра, за да ми пишеш 💋";
-                document.getElementById("step1").innerText = "1. Щракнете върху трите точки в горния десен ъгъл";
-                document.getElementById("step2").innerText = "2. Изберете \"Отвори в браузъра\" от менюто, което се отваря";
-            } else if (userLang.startsWith("ja")) {
-                document.getElementById("mainText").innerText = "私とチャットするにはブラウザを開いてください 💋";
-                document.getElementById("step1").innerText = "1. 右上の3点をクリック";
-                document.getElementById("step2").innerText = "2. 開いたメニューから「ブラウザで開く」を選択";
-            } else if (userLang.startsWith("ko")) {
-                document.getElementById("mainText").innerText = "저와 채팅하려면 브라우저를 열어주세요 💋";
-                document.getElementById("step1").innerText = "1. 오른쪽 상단의 세 점을 클릭하세요";
-                document.getElementById("step2").innerText = "2. 열린 메뉴에서 \"브라우저에서 열기\"를 선택하세요";
-            } else if (userLang.startsWith("sr")) {
-                document.getElementById("mainText").innerText = "Отвори претраживач да ми пишеш 💋";
-                document.getElementById("step1").innerText = "1. Кликните на три тачке у горњем десном углу";
-                document.getElementById("step2").innerText = "2. Изаберите „Отвори у претраживачу“ из менија који се отвори";
             }
         }
+
         window.onload = function() {
             setLanguageText();
+
             const inAppView = document.getElementById('in-app-view');
+
             if (isInAppBrowser()) {
                 inAppView.style.display = 'block';
             } else {
@@ -221,5 +174,6 @@ h1 {
             }
         };
     </script>
+
 </body>
 </html>
